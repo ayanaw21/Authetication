@@ -51,10 +51,32 @@ export default function AuthProvider({ children }) {
             return { success: false, message: err };
         }
     };
+    const signup = async (fullName,email, password) => {
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ fullName,email, password }),
+                credentials: "include",
+            });
+
+            const data = await response.json();
+
+            console.log(data)
+            if (response.ok) {
+                setCurrentUser(data);
+                return { success: true };
+            } else {
+                return { success: false, message: data.message };
+            }
+        } catch (err) {
+            return { success: false, message: err };
+        }
+    };
 
     // 5. Provide the loading state so components can show a spinner
     return (
-        <AuthContext.Provider value={{ currentUser, loading, login }}>
+        <AuthContext.Provider value={{ currentUser, loading, login,signup }}>
             {children}
         </AuthContext.Provider>
     );
