@@ -1,10 +1,40 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AuthProvider from "./context/AuthProvider.jsx";
+import PublicRoute from "./context/PublicRoute.jsx";
+import ProtectedRoute from "./context/ProtectedRoute.jsx";
+import Signup from "./components/Signup.jsx";
+import AdminSettings from "./pages/AdminSettings.jsx";
+import Dashboard from "./pages/dashboard.jsx";
+import Login from "./components/Login.jsx";
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+const router = createBrowserRouter([
+	{
+		element: <PublicRoute />,
+		children: [
+			{ path: "/", element: <App /> },
+			{ path: "/signUp", element: <Signup /> },
+			{ path: "/login", element: <Login /> },
+		],
+	},
+	{
+		element: <ProtectedRoute allowedRoles={["user", "admin"]} />,
+		children: [{ path: "/dashboard", element: <Dashboard /> }],
+	},
+	{
+		element: <ProtectedRoute allowedRoles={["admin"]} />,
+		children: [
+			{ path: "/admin/settings", element: <AdminSettings /> },
+		],
+	},
+]);
+createRoot(document.getElementById("root")).render(
+	<StrictMode>
+		<AuthProvider>
+			<RouterProvider router={router} />
+		</AuthProvider>
+	</StrictMode>
+);

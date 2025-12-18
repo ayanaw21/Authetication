@@ -18,7 +18,8 @@ const app = express();
 const server = http.createServer(app);
 app.use(express.json());
 
-app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+app.use(cors({ origin:ENV.CLIENT_URL, credentials: true }));
+
 app.use(cookieParser());
 
 // Routes 
