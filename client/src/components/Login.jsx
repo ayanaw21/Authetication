@@ -36,6 +36,7 @@ export default function Login() {
 
         if (result.success) {
             // Redirect to dashboard if login is successful
+            
             navigate("/dashboard");
         } else {
             // Display error message from backend (e.g., "Invalid Credentials")

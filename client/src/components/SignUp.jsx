@@ -4,9 +4,8 @@ import { useNavigate, Link } from "react-router-dom";
 
 export default function SignUp() {
     // 1. Access the login function from our Global Context
-    const { signup,currentUser } = useAuth();
+    const { signup } = useAuth();
     const navigate = useNavigate();
-    console.log(currentUser)
     // 2. Local state for form inputs and UI feedback
     const [formData, setFormData] = useState({
         email: "",
@@ -82,8 +81,8 @@ export default function SignUp() {
                                fullName
                             </label>
                             <input
-                                name="email"
-                                type="email"
+                                name="fullName"
+                                type="text"
                                 required
                                 value={formData.fullName}
                                 onChange={handleChange}
