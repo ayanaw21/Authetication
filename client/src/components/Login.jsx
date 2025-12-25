@@ -35,9 +35,15 @@ export default function Login() {
         const result = await login(accountNumber, password);
 
         if (result.success) {
+            console.log(result)
             // Redirect to dashboard if login is successful
-            
+            const userRole = result.message.role
+            if (userRole === "admin") {
+            navigate("/admin");
+        } else {
             navigate("/dashboard");
+        }
+            
         } else {
             // Display error message from backend (e.g., "Invalid Credentials")
             setError(result.message || "Login failed. Please try again.");
@@ -133,9 +139,7 @@ export default function Login() {
                 <div className="text-center">
                     <p className="text-sm text-gray-600">
                         Don't have an account?{" "}
-                        <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500 underline-offset-4 hover:underline">
-                            Sign up for free
-                        </Link>
+                         try to communicate the admins to register
                     </p>
                 </div>
             </div>

@@ -73,17 +73,19 @@ export const deposit = async (req, res) => {
 		});
 	}
 };
-
 export const getHistory = async (req, res) => {
-	try {
-		const userId = req.user._id;
-		const transactions = (await Transaction.find({ userId }))
-			.toSorted({ createdAt: -1 })
-			.limit(10);
-        if(!transactions || transactions.length === 0){
-            return res.status(200).json({transactions})
-        }
-	} catch (error) {
+    try {
+        const userId = req.user._id;
+
+        // 1. Chain .sort() and .limit() directly to the query
+        const transactions = await Transaction.find({ userId })
+            .sort({ createdAt: -1 }) // -1 means descending (newest first)
+            .limit(10);             // Only fetch the last 10
+
+        // 2. Return the transactions (even if empty, an empty array is better than nothing)
+        return res.status(200).json(transactions);
+
+    } catch (error) {
         console.error("Error in getHistory controller:", error.message);
         res.status(500).json({ message: "Internal server error while fetching history" });
     }
