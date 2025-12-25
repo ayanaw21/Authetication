@@ -47,6 +47,7 @@ export const unlockUser = async(req,res)=>{
         }
 
         user.loginAttempts = 0;
+        user.isLocked = false
         user.lockUntil = undefined;
         await user.save()
 

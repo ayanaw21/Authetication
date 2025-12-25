@@ -1,177 +1,144 @@
-import React from "react";
-import {
-  Users,
-  Shield,
-  Activity,
-  LogOut,
-  CreditCard,
-} from "lucide-react";
+import React, { useState } from "react";
+import { Users, Shield, Activity, LogOut, CreditCard, Lock, Unlock, UserPlus } from "lucide-react";
+import { useAuth } from "../context/AuthProvider";
+import Register from "../components/RegisterUser"; // Import the register component
 
 const AdminDashboard = () => {
-  // Mock admin data
-  const admin = {
-    name: "System Administrator",
-    role: "Admin",
-  };
+  const { currentUser, users, logout, unlockAccount } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const totalCustomers = users?.filter((u) => u._id !== currentUser._id).length || 0;
 
   const stats = [
-    { title: "Total Users", value: 124 },
-    { title: "Active Accounts", value: 98 },
-    { title: "Total Transactions", value: 1450 },
-    { title: "Blocked Accounts", value: 3 },
+    { title: "Total Users", value: totalCustomers },
+    { title: "Admin Accounts", value: users?.filter((u) => u.role === "admin").length || 0 },
+    { title: "Total Balance", value: `$${users?.reduce((acc, curr) => acc + curr.balance, 0)}` },
+    { title: "Locked Accounts", value: users?.filter((u) => u.isLocked).length || 0 },
   ];
 
-  const users = [
-    {
-      id: 1,
-      name: "Ayanaw Mengesha",
-      card: "**** **** **** 1234",
-      role: "User",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Abel Tesfaye",
-      card: "**** **** **** 5678",
-      role: "User",
-      status: "Blocked",
-    },
-  ];
+  const handleUnlock = async (userId, userName) => {
+    if (window.confirm(`Unlock ${userName}'s account?`)) {
+      const result = await unlockAccount(userId);
+      if (result.success) alert("Unlocked!");
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 font-sans relative">
+      {/* 1. Modal Overlay Logic */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
+          <div className="relative z-10 w-full max-w-md animate-in fade-in zoom-in duration-200">
+            <Register onClose={() => setIsModalOpen(false)} />
+          </div>
+        </div>
+      )}
+
       {/* Header */}
-      <header className="flex justify-between items-center bg-white px-8 py-4 shadow">
+      <header className="flex justify-between items-center bg-white px-8 py-4 shadow-sm border-b">
         <div>
-          <h1 className="text-xl font-bold text-blue-600">
-            Admin Dashboard
-          </h1>
-          <p className="text-sm text-gray-500">
-            Role: {admin.role}
-          </p>
+          <h1 className="text-2xl font-bold text-blue-700">ATM Admin System</h1>
+          <p className="text-xs text-gray-500">Admin Session: {currentUser?.fullName}</p>
         </div>
 
-        <button className="flex items-center gap-2 text-red-600 hover:text-red-700">
-          <LogOut size={18} />
-          Logout
-        </button>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all font-bold text-sm shadow-md"
+          >
+            <UserPlus size={18} />
+            Add New User
+          </button>
+          <button onClick={logout} className="text-gray-400 hover:text-red-600">
+            <LogOut size={20} />
+          </button>
+        </div>
       </header>
 
-      {/* Main */}
       <main className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Stats */}
-        <section className="grid md:grid-cols-4 gap-6">
+        {/* Stats Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {stats.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-lg shadow"
-            >
-              <h3 className="text-gray-500 text-sm">
-                {item.title}
-              </h3>
-              <p className="text-3xl font-bold text-blue-600">
-                {item.value}
-              </p>
+            <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">{item.title}</h3>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{item.value}</p>
             </div>
           ))}
         </section>
 
-        {/* Admin Capabilities */}
+        {/* Action Cards (Made User Management Clickable) */}
         <section className="grid md:grid-cols-3 gap-6">
           <AdminAction
-            icon={<Users size={32} />}
+            icon={<Users size={28} />}
             title="User Management"
-            description="View, block, or activate user accounts"
+            description="Register or unlock accounts"
+            onClick={() => setIsModalOpen(true)} // Opens modal
           />
-
-          <AdminAction
-            icon={<CreditCard size={32} />}
-            title="Transaction Monitoring"
-            description="Review all ATM transactions"
-          />
-
-          <AdminAction
-            icon={<Shield size={32} />}
-            title="Security Control"
-            description="Manage roles and access permissions"
-          />
+          <AdminAction icon={<CreditCard size={28} />} title="Global Liquidity" description="Monitor total cash flow" />
+          <AdminAction icon={<Shield size={28} />} title="System Security" description="Review login attempts" />
         </section>
 
         {/* Users Table */}
-        <section className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">
-            User Accounts
-          </h2>
+        <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h2 className="text-lg font-bold text-gray-800">System User Directory</h2>
+          </div>
 
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b text-left">
-                <th className="py-2">Name</th>
-                <th className="py-2">Card Number</th>
-                <th className="py-2">Role</th>
-                <th className="py-2">Status</th>
-                <th className="py-2">Action</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id} className="border-b last:border-none">
-                  <td className="py-2">{user.name}</td>
-                  <td className="py-2">{user.card}</td>
-                  <td className="py-2">{user.role}</td>
-                  <td
-                    className={`py-2 font-semibold ${
-                      user.status === "Active"
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {user.status}
-                  </td>
-                  <td className="py-2">
-                    <button
-                      className={`px-3 py-1 rounded text-white text-sm ${
-                        user.status === "Active"
-                          ? "bg-red-600 hover:bg-red-700"
-                          : "bg-green-600 hover:bg-green-700"
-                      }`}
-                    >
-                      {user.status === "Active"
-                        ? "Block"
-                        : "Activate"}
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
+                <tr>
+                  <th className="px-6 py-4">Full Name</th>
+                  <th className="px-6 py-4">Account No.</th>
+                  <th className="px-6 py-4">Balance</th>
+                  <th className="px-6 py-4">Security Status</th>
+                  <th className="px-6 py-4 text-center">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-
-        {/* Security Logs */}
-        <section className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">
-            Security Logs
-          </h2>
-          <ul className="text-sm text-gray-600 space-y-2">
-            <li>✔ Admin logged in successfully</li>
-            <li>✔ User account blocked: **** 5678</li>
-            <li>✔ JWT token verified for admin access</li>
-          </ul>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {users?.filter(u => u._id !== currentUser?._id).map((user) => (
+                  <tr key={user._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 font-medium">{user.fullName}</td>
+                    <td className="px-6 py-4 font-mono">{user.accountNumber}</td>
+                    <td className="px-6 py-4 font-bold text-blue-600">${user.balance}</td>
+                    <td className="px-6 py-4">
+                      <span className={`text-sm font-semibold ${user.isLocked ? "text-red-600" : "text-green-600"}`}>
+                        {user.isLocked ? "Locked" : "Active"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {user.isLocked && (
+                        <button
+                          onClick={() => handleUnlock(user._id, user.fullName)}
+                          className="px-3 py-1 bg-green-600 text-white rounded text-xs font-bold"
+                        >
+                          Unlock
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </main>
     </div>
   );
 };
 
-const AdminAction = ({ icon, title, description }) => (
-  <div className="bg-white p-6 rounded-lg shadow text-center">
-    <div className="flex justify-center text-blue-600 mb-4">
-      {icon}
+const AdminAction = ({ icon, title, description, onClick }) => (
+  <button 
+    onClick={onClick}
+    className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-start gap-4 hover:shadow-md transition-shadow text-left w-full"
+  >
+    <div className="bg-blue-50 p-3 rounded-lg text-blue-600">{icon}</div>
+    <div>
+      <h3 className="font-bold text-gray-900">{title}</h3>
+      <p className="text-gray-500 text-xs mt-1 leading-relaxed">{description}</p>
     </div>
-    <h3 className="font-semibold mb-1">{title}</h3>
-    <p className="text-gray-600 text-sm">{description}</p>
-  </div>
+  </button>
 );
 
 export default AdminDashboard;

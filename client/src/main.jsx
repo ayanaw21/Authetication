@@ -6,7 +6,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AuthProvider from "./context/AuthProvider.jsx";
 import PublicRoute from "./context/PublicRoute.jsx";
 import ProtectedRoute from "./context/ProtectedRoute.jsx";
-import Signup from "./components/Signup.jsx";
 import AdminSettings from "./pages/AdminSettings.jsx";
 import Dashboard from "./pages/dashboard.jsx";
 import Login from "./components/Login.jsx";
@@ -16,19 +15,17 @@ const router = createBrowserRouter([
 		element: <PublicRoute />,
 		children: [
 			{ path: "/", element: <App /> },
-			{ path: "/signUp", element: <Signup /> },
+
 			{ path: "/login", element: <Login /> },
 		],
 	},
 	{
-		element: <ProtectedRoute allowedRoles={["user", "admin"]} />,
+		element: <ProtectedRoute allowedRoles={["user"]} />,
 		children: [{ path: "/dashboard", element: <Dashboard /> }],
 	},
 	{
 		element: <ProtectedRoute allowedRoles={["admin"]} />,
-		children: [
-			{ path: "/admin/settings", element: <AdminSettings /> },
-		],
+		children: [{ path: "/admin", element: <AdminSettings /> }],
 	},
 ]);
 createRoot(document.getElementById("root")).render(

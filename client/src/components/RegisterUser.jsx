@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthProvider";
 import { X } from "lucide-react"; // For a close button
 
 export default function Register({ onClose }) {
-  const { signup } = useAuth();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     fullName: "",
@@ -26,7 +26,7 @@ export default function Register({ onClose }) {
     setIsSubmitting(true);
 
     const { fullName, email, password, balance } = formData;
-    const result = await signup(fullName, email, password, balance);
+    const result = await register(fullName, email, password, balance);
 
     if (result.success) {
       alert("New user account created successfully!");

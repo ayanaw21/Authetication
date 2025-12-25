@@ -3,7 +3,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
 import { ENV } from "../lib/env.js";
-export const signUp = async (req, res) => {
+export const register = async (req, res) => {
 	const { fullName, email, password, balance } = req.body;
 	try {
 		if (!fullName || !email || !password || !balance) {

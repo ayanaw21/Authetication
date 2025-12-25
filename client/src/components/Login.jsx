@@ -9,7 +9,7 @@ export default function Login() {
     console.log(currentUser)
     // 2. Local state for form inputs and UI feedback
     const [formData, setFormData] = useState({
-        email: "",
+        accountNumber: "",
         password: "",
     });
     const [error, setError] = useState("");
@@ -29,10 +29,10 @@ export default function Login() {
         setError(""); // Clear previous errors
         setIsSubmitting(true);
 
-        const { email, password } = formData;
+        const { accountNumber, password } = formData;
 
         // Call the login function from AuthProvider
-        const result = await login(email, password);
+        const result = await login(accountNumber, password);
 
         if (result.success) {
             // Redirect to dashboard if login is successful
@@ -63,7 +63,7 @@ export default function Login() {
                 {error && (
                     <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
                         <div className="flex">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                                 <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                 </svg>
@@ -79,16 +79,16 @@ export default function Login() {
                     <div className="rounded-md shadow-sm space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
-                                Email Address
+                               Account Number
                             </label>
                             <input
-                                name="email"
-                                type="email"
+                                name="accountNumber"
+                                type="accountNumber"
                                 required
-                                value={formData.email}
+                                value={formData.accountNumber}
                                 onChange={handleChange}
                                 className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-all"
-                                placeholder="name@company.com"
+                                placeholder="567873345"
                             />
                         </div>
                         <div>
