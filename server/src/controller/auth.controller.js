@@ -2,7 +2,6 @@ import { generateToken } from "../lib/utils.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
-import { ENV } from "../lib/env.js";
 export const register = async (req, res) => {
 	const { fullName, email, password, balance } = req.body;
 	try {
@@ -86,6 +85,8 @@ export const login = async (req, res) => {
 			user.loginAttempts += 1;
 			if (user.loginAttempts >= 3) {
 				user.lockUntil = Date.now() + 3600000;
+				user.isLocked = true;
+
 				await user.save();
 				return res.status(403).json({
 					message: "Too many attempts. Account locked for 1 hour.",
@@ -101,6 +102,7 @@ export const login = async (req, res) => {
 		}
 		user.loginAttempts = 0;
 		user.lockUntil = undefined;
+		user.isLocked = false;
 		await user.save();
 		generateToken(user._id, res);
 		res.status(200).json({

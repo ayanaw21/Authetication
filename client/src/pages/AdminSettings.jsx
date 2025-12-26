@@ -15,6 +15,7 @@ const AdminDashboard = () => {
     { title: "Total Balance", value: `$${users?.reduce((acc, curr) => acc + curr.balance, 0)}` },
     { title: "Locked Accounts", value: users?.filter((u) => u.isLocked).length || 0 },
   ];
+    console.log(users)
 
   const handleUnlock = async (userId, userName) => {
     if (window.confirm(`Unlock ${userName}'s account?`)) {

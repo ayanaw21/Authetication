@@ -14,8 +14,7 @@ export default function AuthProvider({ children }) {
 	const [loading, setLoading] = useState(true);
 	const [history, setHistory] = useState(null);
 
-	// 1. Move getAllUsers outside useEffect so it can be exported
-	// We use useCallback so it doesn't cause infinite loops in other useEffects
+	
 	const getAllUsers = useCallback(async () => {
 		try {
 			const response = await fetch(
@@ -89,13 +88,13 @@ export default function AuthProvider({ children }) {
 				setCurrentUser(data);
 				// Refresh the user list if an admin logs in
 				await getAllUsers();
-                console.log(data)
-				return { success: true,message:data };
+                
+				return { success: true,user:data };
 			} else {
-				return { success: false, message: data };
+				return { success: false, message: data.message||"Invalid credentials" };
 			}
 		} catch (err) {
-			return { success: false, message: err.message };
+			return { success: false, message: "server connection failed" };
 		}
 	};
 
